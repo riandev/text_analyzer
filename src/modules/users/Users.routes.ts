@@ -1,13 +1,14 @@
 import express from "express";
+import apiLimiter from "src/middlewares/shared/rate_limiter.js";
 import { verifyAccessToken } from "../../middlewares/shared/jwt_helper.js";
 import { protect } from "../../middlewares/shared/protect.js";
 import * as UserController from "./Users.controller.js";
 
 const router = express.Router();
 
-router.post("/register_user", UserController.UserRegister);
+router.post("/register_user", apiLimiter, UserController.UserRegister);
 
-router.post("/login", UserController.UserLogin);
+router.post("/login", apiLimiter, UserController.UserLogin);
 
 router.get(
   "/get_one_user/:id",
