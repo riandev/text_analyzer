@@ -1,4 +1,6 @@
 import express from "express";
+import apiLimiter from "src/middlewares/shared/rate_limiter.js";
+import { cacheMiddleware } from "../../middlewares/shared/cache_middleware.js";
 import { verifyAccessToken } from "../../middlewares/shared/jwt_helper.js";
 import { protect } from "../../middlewares/shared/protect.js";
 import * as TextController from "./Text.controller.js";
@@ -30,13 +32,43 @@ router.delete(
   TextController.DeleteOneAnalysis
 );
 
-// Public Routes
+// Public Routes with caching
 
-router.post("/word-count", TextController.getWordCount);
-router.post("/character-count", TextController.getCharacterCount);
-router.post("/sentence-count", TextController.getSentenceCount);
-router.post("/paragraph-count", TextController.getParagraphCount);
-router.post("/longest-words", TextController.getLongestWords);
-router.post("/complete", TextController.getCompleteAnalysis);
+router.post(
+  "/word-count",
+  apiLimiter,
+  cacheMiddleware,
+  TextController.getWordCount
+);
+router.post(
+  "/character-count",
+  apiLimiter,
+  cacheMiddleware,
+  TextController.getCharacterCount
+);
+router.post(
+  "/sentence-count",
+  apiLimiter,
+  cacheMiddleware,
+  TextController.getSentenceCount
+);
+router.post(
+  "/paragraph-count",
+  apiLimiter,
+  cacheMiddleware,
+  TextController.getParagraphCount
+);
+router.post(
+  "/longest-words",
+  apiLimiter,
+  cacheMiddleware,
+  TextController.getLongestWords
+);
+router.post(
+  "/complete",
+  apiLimiter,
+  cacheMiddleware,
+  TextController.getCompleteAnalysis
+);
 
 export default router;

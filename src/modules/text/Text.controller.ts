@@ -2,8 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import createError from "http-errors";
 import { JoiError } from "../../helpers/error.js";
 import { toObjectId } from "../../helpers/toObjectId.js";
+import { clearCache } from "../../middlewares/shared/cache_middleware.js";
 import { AuthRequest } from "../../middlewares/shared/jwt_helper.js";
 import { analyzeText } from "../../services/analyzer.service.js";
+import { logger } from "../../utils/logger.js";
 import Text from "./Text.model.js";
 import { textSchema } from "./Text.validation.js";
 interface TextQuery {
@@ -42,6 +44,10 @@ export const AddText = async (
     result.sentence_count = analysis.sentenceCount;
     result.paragraph_count = analysis.paragraphCount;
     result.longest_word = analysis.longestWord[0];
+
+    await clearCache(result.text);
+    logger.info(`Cache cleared for new text analysis`);
+
     const data = await Text.create(result);
     res.status(200).json(data);
   } catch (error: any) {
