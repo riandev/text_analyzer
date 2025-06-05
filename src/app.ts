@@ -4,10 +4,15 @@ import { cyanBright, red } from "console-log-colors";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
-import express, { Request, Response, NextFunction, ErrorRequestHandler } from "express";
+import express, {
+  ErrorRequestHandler,
+  NextFunction,
+  Request,
+  Response,
+} from "express";
 import status from "express-status-monitor";
 import helmet from "helmet";
-import { createServer } from 'http';
+import { createServer } from "http";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import os from "os";
@@ -16,7 +21,6 @@ import { fileURLToPath } from "url";
 import "./database/init_mongodb.js";
 import "./database/init_redis.js";
 import routes from "./routes/Routes.js";
-import staticRoutes from "./routes/staticRoutes.js";
 
 interface CustomError extends Error {
   status?: number;
@@ -31,20 +35,27 @@ const app = express();
 const httpServer = createServer(app);
 
 app.use(status());
-app.use(cors({
-  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    if (!origin) return callback(null, true);
-    callback(null, true);
-  },
-  credentials: true
-}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: function (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void
+    ) {
+      if (!origin) return callback(null, true);
+      callback(null, true);
+    },
+    credentials: true,
+  })
+);
 
 app.use(
   helmet({
     crossOriginResourcePolicy: false,
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
-  }),
+  })
 );
 
 app.use(morgan("dev"));
@@ -52,17 +63,21 @@ app.use(express.static("../dist"));
 app.use(cookieParser());
 app.use(compression());
 
-app.use(staticRoutes);
 app.use("/api", routes);
 
-const errorHandler: ErrorRequestHandler = (err: CustomError, req: Request, res: Response, next: NextFunction) => {
+const errorHandler: ErrorRequestHandler = (
+  err: CustomError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   res.status(err.status || 500);
 
   const errorResponse = {
     error: {
       status: err.status || 500,
       ...err,
-      message: err.message
+      message: err.message,
     },
   };
 
@@ -76,7 +91,8 @@ app.get("*", (req: Request, res: Response) => {
 });
 
 const numCpu = os.cpus()?.length;
-const cpus = numCpu > 0 && numCpu <= 5 ? numCpu - 1 : numCpu > 8 ? numCpu - 2 : numCpu;
+const cpus =
+  numCpu > 0 && numCpu <= 5 ? numCpu - 1 : numCpu > 8 ? numCpu - 2 : numCpu;
 const PORT = process.env.PORT || 3000;
 
 if (cluster.isPrimary) {
@@ -84,16 +100,18 @@ if (cluster.isPrimary) {
     cluster.fork();
   }
   cluster.on("exit", (worker, code, signal) => {
-    console.log(red(`worker ${worker.process.pid} with ${code} & Signal ${signal} killed`));
+    console.log(
+      red(`worker ${worker.process.pid} with ${code} & Signal ${signal} killed`)
+    );
     cluster.fork();
   });
 } else {
   const server = httpServer.listen(PORT, () =>
     console.log(
-      cyanBright(`Server running on port ${PORT} with worker ${process.pid}`),
-    ),
+      cyanBright(`Server running on port ${PORT} with worker ${process.pid}`)
+    )
   );
-  
+
   process.on("SIGINT", () => {
     console.log("SIGINT Received");
     server.close(() => {
@@ -103,7 +121,7 @@ if (cluster.isPrimary) {
       console.log("Server Closed ....");
     });
   });
-  
+
   process.on("SIGTERM", () => {
     console.log("SIGTERM Received");
     server.close(() => {
@@ -114,3 +132,5 @@ if (cluster.isPrimary) {
     });
   });
 }
+
+export default app;

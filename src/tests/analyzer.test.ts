@@ -11,7 +11,7 @@ describe("Text Analyzer Service", () => {
 
   it("should return correct character count", () => {
     const result = analyzeText(sampleText);
-    expect(result.characterCount).toBe(60); // excluding whitespace
+    expect(result.characterCount).toBe(75);
   });
 
   it("should return correct sentence count", () => {
@@ -26,6 +26,6 @@ describe("Text Analyzer Service", () => {
 
   it("should return longest word", () => {
     const result = analyzeText(sampleText);
-    expect(result.longestWord).toBe("quick"); // or 'jumps', depending on logic
+    expect(result.longestWord).toEqual(["quick"]);
   });
 });

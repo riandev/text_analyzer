@@ -3,17 +3,21 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import client from "../../database/init_redis.js";
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   payload?: {
     aud: string;
     role: string;
   };
 }
 
-export const signAccessToken = (userId: string): Promise<string> => {
+export const signAccessToken = (
+  userId: string,
+  role: string
+): Promise<string> => {
   return new Promise((resolve, reject) => {
     const payload = {
       aud: userId,
+      role,
     };
     const secret = process.env.ACCESS_TOKEN_SECRET || "";
     const options = {
@@ -54,10 +58,14 @@ export const verifyAccessToken = (
   });
 };
 
-export const signRefreshToken = (userId: string): Promise<string> => {
+export const signRefreshToken = (
+  userId: string,
+  role: string
+): Promise<string> => {
   return new Promise((resolve, reject) => {
     const payload = {
       aud: userId,
+      role,
     };
     const secret = process.env.REFRESH_TOKEN_SECRET || "";
     const options = {

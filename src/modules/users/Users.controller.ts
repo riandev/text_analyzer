@@ -9,7 +9,7 @@ import {
   verifyRefreshToken,
 } from "../../middlewares/shared/jwt_helper.js";
 import User, { IUser } from "./Users.model.js";
-import { userSchema } from "./Users.validation.js";
+import { loginSchema, userSchema } from "./Users.validation.js";
 
 dotenv.config();
 
@@ -32,9 +32,8 @@ export const UserRegister = async (
     const doesExist = await User.findOne({ email: result.email });
     if (doesExist)
       throw createError.Conflict(`${result.email} is already been registered`);
-    const user = new User(result);
-    await user.save();
-    res.send({ message: "Successfully Added" });
+    const data = await User.create(result);
+    res.send(data);
   } catch (e) {
     next(e);
   }
@@ -94,9 +93,13 @@ export const refreshToken = async (
     const { refreshToken } = req.body;
     if (!refreshToken) throw createError.BadRequest();
     const userId = await verifyRefreshToken(refreshToken);
+    const user = await User.findById(userId);
+    if (!user) throw createError.NotFound("User not found");
 
-    const accessToken = await signAccessToken(userId);
-    const refToken = await signRefreshToken(userId);
+    const role = user.role || "user";
+
+    const accessToken = await signAccessToken(userId, role);
+    const refToken = await signRefreshToken(userId, role);
     res.send({ accessToken: accessToken, refreshToken: refToken });
   } catch (error) {
     next(error);
@@ -152,5 +155,36 @@ export const GetUserById = async (
     }
   } catch (e) {
     next(e);
+  }
+};
+
+export const UserLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await loginSchema.validateAsync(req.body);
+    const user = await User.findOne({ email: result.email });
+    if (!user) throw createError.NotFound("User not registered");
+
+    const isMatch = await user.isValidPassword(result.password);
+    if (!isMatch) throw createError.Unauthorized("Username/password not valid");
+    await User.updateOne(
+      { email: result?.email },
+      { $set: { web_token: req.body.web_token } }
+    );
+    const accessToken = await signAccessToken(user.id, user?.role);
+    const refreshToken = await signRefreshToken(user.id, user?.role);
+
+    res.send({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      role: user?.role,
+    });
+  } catch (error: any) {
+    if (error.isJoi === true)
+      return next(createError.BadRequest("Invalid Username/Password"));
+    next(error);
   }
 };

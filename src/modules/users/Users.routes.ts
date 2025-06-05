@@ -1,28 +1,41 @@
 import express from "express";
 import { verifyAccessToken } from "../../middlewares/shared/jwt_helper.js";
 import { protect } from "../../middlewares/shared/protect.js";
-import {
-  DeleteOneUser,
-  GetOneUser,
-  GetUserById,
-  logout,
-  refreshToken,
-} from "./Users.controller.js";
+import * as UserController from "./Users.controller.js";
 
 const router = express.Router();
+
+router.post("/register_user", UserController.UserRegister);
+
+router.post("/login", UserController.UserLogin);
 
 router.get(
   "/get_one_user/:id",
   verifyAccessToken,
-  protect(["admin", "customer", "parlor"]),
-  GetOneUser
+  protect(["user"]),
+  UserController.GetOneUser
 );
-router.post("/logout", verifyAccessToken, protect(["admin", "doctor"]), logout);
+router.post(
+  "/logout",
+  verifyAccessToken,
+  protect(["user"]),
+  UserController.logout
+);
 
-router.post("/refresh-token", refreshToken);
+router.post("/refresh-token", UserController.refreshToken);
 
-router.delete("/delete_user/:id", verifyAccessToken, DeleteOneUser);
+router.delete(
+  "/delete_user/:id",
+  verifyAccessToken,
+  protect(["user"]),
+  UserController.DeleteOneUser
+);
 
-router.get("/get_user_by_token", verifyAccessToken, GetUserById);
+router.get(
+  "/get_user_by_token",
+  verifyAccessToken,
+  protect(["user"]),
+  UserController.GetUserById
+);
 
 export default router;

@@ -35,10 +35,23 @@ const UserSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
+UserSchema.pre("save", async function (next) {
+  try {
+    if (this.isNew) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(this.password as string, salt);
+      this.password = hashedPassword;
+    }
+    next();
+  } catch (error: any) {
+    next(error);
+  }
+});
+
 UserSchema.methods.isValidPassword = async function (
   password: string
 ): Promise<boolean> {
-  return await bcrypt.compare(password, this.password);
+  return await bcrypt.compare(password, this.password as string);
 };
 
 const User: Model<IUser> = mongoose.model<IUser>("users", UserSchema);
