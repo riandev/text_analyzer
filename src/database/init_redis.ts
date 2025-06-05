@@ -1,6 +1,7 @@
 import { cyan } from "console-log-colors";
 import dotenv from "dotenv";
 import { createClient, RedisClientType } from "redis";
+import { logger } from "../utils/logger.js";
 dotenv.config();
 
 const parseRedisUrl = (url: string): { host: string; port: number } => {
@@ -35,16 +36,16 @@ const client: RedisClient = createClient({
 const connectRedis = async (): Promise<void> => {
   try {
     await client.connect();
-    console.log(cyan("Redis client connected"));
+    logger.info(cyan("Redis client connected"));
   } catch (err) {
-    console.log(cyan(`Redis client connection error: ${err}`));
+    logger.error(cyan(`Redis client connection error: ${err}`));
   }
 };
 
 connectRedis().catch(console.error);
 
 client.on("error", (err) => {
-  console.log(cyan(`Redis client error: ${err}`));
+  logger.error(cyan(`Redis client error: ${err}`));
 });
 
 const socketMap = new Map<string, string>();
@@ -58,7 +59,7 @@ export const addSocketId = async (
     await client.set(key, socketId);
     socketMap.set(userId, socketId);
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     throw error;
   }
 };
@@ -69,7 +70,7 @@ export const getSocketId = async (userId: string): Promise<string | null> => {
     const reply = await client.get(key);
     return reply;
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     throw error;
   }
 };
@@ -79,7 +80,7 @@ export const removeSocketId = async (userId: string): Promise<void> => {
     await client.del(`p_user:${userId}`);
     socketMap.delete(userId);
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     throw error;
   }
 };

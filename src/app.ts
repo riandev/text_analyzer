@@ -21,6 +21,8 @@ import { fileURLToPath } from "url";
 import "./database/init_mongodb.js";
 import "./database/init_redis.js";
 import routes from "./routes/Routes.js";
+import { logger } from "./utils/logger.js";
+import { setupLogsDirectory } from "./utils/setupLogs.js";
 
 interface CustomError extends Error {
   status?: number;
@@ -30,6 +32,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 dotenv.config();
+
+setupLogsDirectory();
 
 const app = express();
 const httpServer = createServer(app);
@@ -80,7 +84,7 @@ const errorHandler: ErrorRequestHandler = (
       message: err.message,
     },
   };
-
+  logger.error(err.stack);
   res.send(errorResponse);
 };
 
@@ -100,35 +104,35 @@ if (cluster.isPrimary) {
     cluster.fork();
   }
   cluster.on("exit", (worker, code, signal) => {
-    console.log(
+    logger.error(
       red(`worker ${worker.process.pid} with ${code} & Signal ${signal} killed`)
     );
     cluster.fork();
   });
 } else {
   const server = httpServer.listen(PORT, () =>
-    console.log(
+    logger.info(
       cyanBright(`Server running on port ${PORT} with worker ${process.pid}`)
     )
   );
 
   process.on("SIGINT", () => {
-    console.log("SIGINT Received");
+    logger.info("SIGINT Received");
     server.close(() => {
       mongoose.connection.close().then(() => {
         process.exit(0);
       });
-      console.log("Server Closed ....");
+      logger.info("Server Closed ....");
     });
   });
 
   process.on("SIGTERM", () => {
-    console.log("SIGTERM Received");
+    logger.info("SIGTERM Received");
     server.close(() => {
       mongoose.connection.close().then(() => {
         process.exit(0);
       });
-      console.log("Server Closed ....");
+      logger.info("Server Closed ....");
     });
   });
 }

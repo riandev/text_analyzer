@@ -1,6 +1,7 @@
-import { cyanBright, red } from "console-log-colors";
+import { cyanBright } from "console-log-colors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import { logger } from "../utils/logger.js";
 dotenv.config();
 
 const connectDB = async (): Promise<mongoose.Connection> => {
@@ -10,16 +11,16 @@ const connectDB = async (): Promise<mongoose.Connection> => {
       serverSelectionTimeoutMS: 3000000,
       socketTimeoutMS: 30000000,
     });
-    console.log(
+    logger.info(
       cyanBright(`${process.env.DB_NAME} Connected: ${con.connection.host}`)
     );
 
     mongoose.connection.on("disconnected", () => {
-      console.log(red("Mongoose connection is disconnected."));
+      logger.error("Mongoose connection is disconnected.");
     });
     return con.connection;
   } catch (error) {
-    console.log("found Error on Connection=>", error);
+    logger.error("found Error on Connection=>", error);
     process.exit(1);
   }
 };
