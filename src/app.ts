@@ -21,6 +21,7 @@ import { fileURLToPath } from "url";
 import "./database/init_mongodb.js";
 import "./database/init_redis.js";
 import routes from "./routes/Routes.js";
+import { setupLogDashboard } from "./utils/logDashboard.js";
 import { logger } from "./utils/logger.js";
 import { setupLogsDirectory } from "./utils/setupLogs.js";
 
@@ -34,6 +35,9 @@ const __dirname = dirname(__filename);
 dotenv.config();
 
 setupLogsDirectory();
+
+// Initialize Winston Dashboard and mount it to the app
+const dashboardRouter = setupLogDashboard();
 
 const app = express();
 const httpServer = createServer(app);
@@ -68,6 +72,7 @@ app.use(cookieParser());
 app.use(compression());
 
 app.use("/api", routes);
+app.use("/logs", dashboardRouter);
 
 const errorHandler: ErrorRequestHandler = (
   err: CustomError,
