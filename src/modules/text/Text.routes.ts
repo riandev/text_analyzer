@@ -1,5 +1,5 @@
 import express from "express";
-import apiLimiter from "src/middlewares/shared/rate_limiter.js";
+import apiLimiter from "../../middlewares/shared/rate_limiter.js";
 import { cacheMiddleware } from "../../middlewares/shared/cache_middleware.js";
 import { verifyAccessToken } from "../../middlewares/shared/jwt_helper.js";
 import { protect } from "../../middlewares/shared/protect.js";

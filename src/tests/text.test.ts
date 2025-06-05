@@ -82,8 +82,8 @@ describe("Text Analyzer API Routes", () => {
         .set("Authorization", `Bearer ${token}`)
         .send({ text: "This is a protected route test." });
       expect([200, 201]).toContain(res.statusCode);
-      expect(res.body._id).toBeDefined();
-      createdId = res.body._id;
+      expect(res.body.data._id).toBeDefined();
+      createdId = res.body.data._id;
     });
 
     it("should get all text analyses for the user", async () => {
@@ -91,7 +91,7 @@ describe("Text Analyzer API Routes", () => {
         .get("/api/analyzer/all")
         .set("Authorization", `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
-      expect(Array.isArray(res.body)).toBe(true);
+      expect(Array.isArray(res.body.data)).toBe(true);
     });
 
     it("should get one text analysis by ID", async () => {
