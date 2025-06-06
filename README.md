@@ -36,7 +36,7 @@ A full-stack application for analyzing text content with features for counting w
 ### 1. Clone the repository
 
 ```bash
-git clone <https://github.com/riandev/text_analyzer.git>
+git clone https://github.com/riandev/text_analyzer.git
 cd text_analyzer
 ```
 
