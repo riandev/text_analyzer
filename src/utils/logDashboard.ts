@@ -1,7 +1,8 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import winston from "winston";
+import { isAdmin } from "../middlewares/auth/auth.middleware.js";
 import { generateDashboardHtml } from "./dashboardTemplate.js";
 import { logger } from "./logger.js";
 
@@ -53,6 +54,11 @@ const readLogsFromFile = (filePath: string, limit = 500): any[] => {
 };
 
 export const setupLogDashboard = () => {
+  // Apply admin authentication middleware to all log dashboard routes
+  dashboardRouter.use((req: Request, res: Response, next: NextFunction) => {
+    // Check if user is authenticated and has admin role
+    isAdmin(req, res, next);
+  });
   const memoryTransport = new winston.transports.Console({
     format: winston.format.combine(
       winston.format.timestamp(),
@@ -118,6 +124,6 @@ export const setupLogDashboard = () => {
 };
 
 export const logDashboardMiddleware = (app: express.Application) => {
-  app.use("/logs", dashboardRouter);
+  app.use("/logs", isAdmin, dashboardRouter);
   logger.info("Winston Dashboard middleware mounted at /logs");
 };

@@ -39,13 +39,20 @@ export const verifyAccessToken = (
   res: Response,
   next: NextFunction
 ): void => {
-  if (!req.headers["authorization"]) {
-    next(createError.Unauthorized());
+  let token: string | undefined;
+
+  if (req.headers["authorization"]) {
+    const authHeader = req.headers["authorization"];
+    const bearerToken = authHeader.split(" ");
+    token = bearerToken[1];
+  } else if (req.cookies && req.cookies.access_token) {
+    token = req.cookies.access_token;
+  }
+  if (!token) {
+    next(createError.Unauthorized("Access token is required"));
     return;
   }
-  const authHeader = req.headers["authorization"];
-  const bearerToken = authHeader.split(" ");
-  const token = bearerToken[1];
+
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || "", (err, payload) => {
     if (err) {
       const message =

@@ -8,19 +8,10 @@ import {
   signRefreshToken,
   verifyRefreshToken,
 } from "../../middlewares/shared/jwt_helper.js";
-import User, { IUser } from "./Users.model.js";
+import User from "./Users.model.js";
 import { loginSchema, userSchema } from "./Users.validation.js";
 
 dotenv.config();
-
-interface AuthRequest extends Request {
-  payload?: {
-    aud: string;
-    role: string;
-  };
-  user?: IUser;
-  webToken?: string;
-}
 
 export const UserRegister = async (
   req: Request,
@@ -124,37 +115,6 @@ export const logout = async (
     }
   } catch (error) {
     next(error);
-  }
-};
-
-export const GetUserById = async (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const id = req.payload?.aud;
-    if (id) {
-      const user = await User.aggregate([
-        {
-          $match: {
-            $and: [{ _id: toObjectId(id) }],
-          },
-        },
-        {
-          $project: {
-            _id: 1,
-            name: 1,
-            email: 1,
-            role: 1,
-            createdAt: 1,
-          },
-        },
-      ]);
-      res.send(user[0]);
-    }
-  } catch (e) {
-    next(e);
   }
 };
 

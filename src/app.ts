@@ -1,5 +1,6 @@
 import cluster from "cluster";
 import compression from "compression";
+import MongoStore from "connect-mongo";
 import { cyanBright, red } from "console-log-colors";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -10,17 +11,25 @@ import express, {
   Request,
   Response,
 } from "express";
+import expressLayouts from "express-ejs-layouts";
+import session from "express-session";
 import status from "express-status-monitor";
 import helmet from "helmet";
 import { createServer } from "http";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import os from "os";
+import passport from "passport";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+import authConfig from "./config/auth.config.js";
 import "./database/init_mongodb.js";
 import "./database/init_redis.js";
-import routes from "./routes/Routes.js";
+import "./middlewares/auth/auth.middleware.js";
+import { isAdmin } from "./middlewares/auth/auth.middleware.js";
+import frontendRoutes from "./routes/frontend.routes.js";
+import authRoutes from "./routes/oauth.routes.js";
+import routes from "./routes/routes.js";
 import { setupLogDashboard } from "./utils/logDashboard.js";
 import { logger } from "./utils/logger.js";
 import { setupLogsDirectory } from "./utils/setupLogs.js";
@@ -67,12 +76,37 @@ app.use(
 );
 
 app.use(morgan("dev"));
-app.use(express.static("../dist"));
+app.use(express.static(join(__dirname, "../public")));
 app.use(cookieParser());
 app.use(compression());
 
+app.set("view engine", "ejs");
+app.set("views", join(__dirname, "views"));
+app.use(expressLayouts);
+app.set("layout", "layout");
+app.set("layout extractScripts", true);
+app.set("layout extractStyles", true);
+
+app.use(
+  session({
+    secret: authConfig.session.secret,
+    resave: authConfig.session.resave,
+    saveUninitialized: authConfig.session.saveUninitialized,
+    cookie: authConfig.session.cookie,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      collectionName: "sessions",
+    }) as any,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use("/", frontendRoutes);
+app.use("/", authRoutes);
 app.use("/api", routes);
-app.use("/logs", dashboardRouter);
+app.use("/logs", isAdmin, dashboardRouter);
 
 const errorHandler: ErrorRequestHandler = (
   err: CustomError,

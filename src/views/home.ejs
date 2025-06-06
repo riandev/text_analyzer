@@ -1,0 +1,54 @@
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 offset-md-2 text-center">
+      <h1 class="display-4">Welcome to Text Analyzer</h1>
+      <p class="lead mb-4">A powerful API for analyzing text content with detailed metrics and insights</p>
+      
+      <% if (user) { %>
+        <p class="mb-4">Hello, <%= user.name %>! You're logged in and have full access to all features.</p>
+        <div class="d-grid gap-2 d-md-block">
+          <a href="/analyzer" class="btn btn-primary btn-lg me-md-2">
+            <i class="fas fa-chart-bar me-2"></i> Analyze Text
+          </a>
+          <a href="/history" class="btn btn-outline-primary btn-lg">
+            <i class="fas fa-history me-2"></i> View History
+          </a>
+        </div>
+      <% } else { %>
+        <p class="mb-4">Please log in to access the text analyzer features.</p>
+        <div class="d-grid gap-2 d-md-block">
+          <a href="/login" class="btn btn-primary btn-lg">
+            <i class="fas fa-sign-in-alt me-2"></i> Login
+          </a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+  
+  <div class="row mt-5">
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fas fa-chart-pie text-primary me-2"></i> Text Analysis</h5>
+          <p class="card-text">Analyze any text to get detailed metrics including word count, character count, sentence count, paragraph count, and more.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fas fa-history text-primary me-2"></i> Analysis History</h5>
+          <p class="card-text">Access your previous text analysis results anytime. All your analyses are securely stored and linked to your account.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fas fa-shield-alt text-primary me-2"></i> Secure API</h5>
+          <p class="card-text">Our API is protected with OAuth 2.0 authentication to ensure that only authorized users can access the text analysis features.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

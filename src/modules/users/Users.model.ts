@@ -37,9 +37,9 @@ const UserSchema = new Schema(
 
 UserSchema.pre("save", async function (next) {
   try {
-    if (this.isNew) {
+    if (this.isNew && this.password) {
       const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(this.password as string, salt);
+      const hashedPassword = await bcrypt.hash(this.password, salt);
       this.password = hashedPassword;
     }
     next();
@@ -51,7 +51,8 @@ UserSchema.pre("save", async function (next) {
 UserSchema.methods.isValidPassword = async function (
   password: string
 ): Promise<boolean> {
-  return await bcrypt.compare(password, this.password as string);
+  if (!this.password) return false;
+  return await bcrypt.compare(password, this.password);
 };
 
 const User: Model<IUser> = mongoose.model<IUser>("users", UserSchema);

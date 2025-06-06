@@ -1,0 +1,33 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Login to Text Analyzer</h4>
+        </div>
+        <div class="card-body">
+          <% if (messages && messages.error) { %>
+            <div class="alert alert-danger" role="alert">
+              <%= messages.error %>
+            </div>
+          <% } %>
+          <% if (messages && messages.success) { %>
+            <div class="alert alert-success" role="alert">
+              <%= messages.success %>
+            </div>
+          <% } %>
+          
+          <div class="text-center mb-4">
+            <p>Access to the Text Analyzer API and dashboard requires authentication.</p>
+          </div>
+          
+          <div class="d-grid gap-2">
+            <a href="/auth/login" class="btn btn-lg btn-primary">
+              <i class="fas fa-sign-in-alt me-2"></i> Login with OAuth
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

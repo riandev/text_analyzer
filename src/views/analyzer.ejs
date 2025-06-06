@@ -1,0 +1,109 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Text Analyzer</h4>
+        </div>
+        <div class="card-body">
+          <div id="alert-container"></div>
+
+          <form id="analyzer-form">
+            <div class="mb-3">
+              <label for="text-input" class="form-label"
+                >Enter text to analyze:</label
+              >
+              <textarea
+                class="form-control"
+                id="text-input"
+                rows="6"
+                placeholder="Paste or type your text here..."
+              ></textarea>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button type="submit" class="btn btn-primary" id="analyze-btn">
+                <i class="fas fa-chart-bar me-2"></i> Analyze Text
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4" id="analysis-result" style="display: none">
+    <div class="col-md-12">
+      <div class="card shadow-sm result-card">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">Analysis Results</h4>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-2 col-sm-4 mb-3">
+              <div class="card stat-card">
+                <div class="stat-value" id="word-count">0</div>
+                <div class="stat-label">Words</div>
+              </div>
+            </div>
+            <div class="col-md-2 col-sm-4 mb-3">
+              <div class="card stat-card">
+                <div class="stat-value" id="char-count">0</div>
+                <div class="stat-label">Characters</div>
+              </div>
+            </div>
+            <div class="col-md-2 col-sm-4 mb-3">
+              <div class="card stat-card">
+                <div class="stat-value" id="sentence-count">0</div>
+                <div class="stat-label">Sentences</div>
+              </div>
+            </div>
+            <div class="col-md-2 col-sm-4 mb-3">
+              <div class="card stat-card">
+                <div class="stat-value" id="paragraph-count">0</div>
+                <div class="stat-label">Paragraphs</div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-8 mb-3">
+              <div class="card stat-card">
+                <div class="stat-value" id="longest-word">-</div>
+                <div class="stat-label">Longest Word</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+            <button
+              type="button"
+              class="btn btn-outline-primary me-md-2"
+              id="save-analysis"
+            >
+              <i class="fas fa-save me-2"></i> Save Analysis
+            </button>
+            <a href="/history" class="btn btn-outline-secondary">
+              <i class="fas fa-history me-2"></i> View History
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    console.log("Analyzer page loaded");
+
+    const saveButton = document.getElementById("save-analysis");
+    if (saveButton) {
+      saveButton.addEventListener("click", function () {
+        const textInput = document.getElementById("text-input").value.trim();
+
+        if (typeof saveAnalysis === "function") {
+          saveAnalysis(textInput);
+        } else {
+          console.error("saveAnalysis function not found");
+        }
+      });
+    }
+  });
+</script>
