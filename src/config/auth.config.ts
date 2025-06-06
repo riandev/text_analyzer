@@ -1,9 +1,11 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 export default {
   // I put here default values for so that it works in development and testing
   oauth: {
-    clientID:
-      "221128330752-5rbsso7ajfe7d4lms78a4skgbtgomh0o.apps.googleusercontent.com",
-    clientSecret: "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",
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: "http://localhost:3001/auth/callback",
     authorizationURL: "https://accounts.google.com/o/oauth2/v2/auth",
     tokenURL: "https://oauth2.googleapis.com/token",
