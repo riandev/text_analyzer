@@ -2,7 +2,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export default {
-  // I put here default values for so that it works in development and testing
   oauth: {
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
