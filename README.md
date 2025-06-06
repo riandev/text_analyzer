@@ -42,8 +42,9 @@ cd text_analyzer
 
 ### 2. Install dependencies
 
-````bash
+```bash
 npm install
+```
 
 ### 3. Environment Setup
 
@@ -53,7 +54,7 @@ Rename the `.env.example` file to `.env` in the root directory:
 cp .env.example .env
 # or
 mv .env.example .env
-````
+```
 
 The example file already contains all the necessary configuration including MongoDB and Redis connection strings.
 
