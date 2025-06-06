@@ -26,7 +26,7 @@ A full-stack application for analyzing text content with features for counting w
 
 ## Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js (v20 or higher)
 - MongoDB (Atlas which is already added in .env.example)
 - Redis (cloud url is already added in .env.example)
 - Google OAuth credentials (already added in auth.config.ts)
@@ -77,7 +77,6 @@ For production:
 ```bash
 npm start
 ```
-
 
 ## Testing
 
