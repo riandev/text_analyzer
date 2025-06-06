@@ -78,6 +78,19 @@ For production:
 npm start
 ```
 
+
+## Testing
+
+The application follows a Test-Driven Development (TDD) approach with Jest.
+
+```bash
+# Run tests
+npm run test
+
+# Generate test coverage report
+npm run coverage
+```
+
 ## API Endpoints
 
 ### Authentication Protected Endpoints
@@ -140,18 +153,6 @@ These endpoints are public but protected by rate limiting and use Redis caching:
 - **/auth/callback** - OAuth callback URL
 - **/logs** - Log visualization dashboard (requires admin role)
 
-## Testing
-
-The application follows a Test-Driven Development (TDD) approach with Jest.
-
-```bash
-# Run tests
-npm run test
-
-# Generate test coverage report
-npm run coverage
-```
-
 ## Log Visualization
 
 The application includes a custom Winston Dashboard for log visualization, accessible at `/logs` (admin access required). Features include:
@@ -201,14 +202,6 @@ The application uses Redis for caching analysis results to improve performance. 
 ├── nodemon.json          # Nodemon configuration
 ├── package.json          # Project dependencies
 └── tsconfig.json         # TypeScript configuration
-```
-
-## Development
-
-The application uses nodemon for development, which automatically restarts the server when files change:
-
-```bash
-npm run dev
 ```
 
 ## License
