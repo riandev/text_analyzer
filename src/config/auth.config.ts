@@ -1,6 +1,4 @@
-import dotenv from "dotenv";
-dotenv.config();
-
+// i put here static keys which not profession. i put there so that you can easily test the application
 export default {
   oauth: {
     clientID:
